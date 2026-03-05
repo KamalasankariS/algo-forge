@@ -1,0 +1,29 @@
+name: Algo Forge XP
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  update-xp:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - name: Get commit message
+        id: msg
+        run: echo "msg=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+
+      - name: Update XP
+        run: python scripts/xp_update.py "${{ steps.msg.outputs.msg }}"
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "algo-forge-bot"
+          git config --global user.email "bot@github.com"
+          git add data/xp.json
+          git commit -m "xp update"
+          git push
